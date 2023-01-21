@@ -18,6 +18,6 @@ html, body {
     margin-left: -75px;
 }
 
-#computadora-carta, #jugador-carta{
+.espacio-carta{
     height: 200px;
 }
