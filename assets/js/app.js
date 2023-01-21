@@ -3,17 +3,15 @@
 //  H = Hearts, corazon
 //  S = Spades, pica
 
+let puntosComputador = 0;
+let puntosJugador = 0;
+let baraja = [];
 
-let puntosComputador = 0,
-    puntosJugador = 0;
-
+const tipos = 'CDHS';
+const letras = 'AJQK';
 
 // Esta funcion crea una baraja mezclada
 const crearBaraja = ( ) =>{
-
-    let baraja = [];
-    const tipos = 'CDHS';
-    const letras = 'AJQK';
 
     for( let letra of tipos ){
 
@@ -33,46 +31,66 @@ const crearBaraja = ( ) =>{
     return baraja;
 }
 
-// Creando baraja
+// NUEVA BARAJA
 let barajaMezclada = crearBaraja();
 
+// PEDIR CARTA
 const pedirCarta = () => {
     const carta = barajaMezclada.pop();
     return carta;
 }
 
-// Valor numerico de una carta alfabetica (AH, QD, KC)
+// VALOR CARTA
 const valorCarta = ( carta ) => {
     const valor = carta.substring( 0, carta.length - 1 );
     return ( isNaN( valor ) ) ? (valor === 'A')? 11 : 10: valor * 1;  
 }
 
 // Turno de la computadora
-const turnoComputadora = ( puntosMinimos ) => {
+const turnoComputadora = ( puntosJugador ) => {
 
     do{
         const carta = pedirCarta();
-        puntosComputador += valorCarta( carta );
+        puntosComputador = puntosComputador + valorCarta( carta );
         mostrarCarta( carta, computadorCarta );
-        cambiarPuntaje( puntosComputador, 1 );
+        cambiarPuntaje( puntosComputador, scoreCompu );
 
-    }while( puntosComputador < puntosJugador );
+    }while( puntosComputador < puntosJugador &&
+            puntosJugador <= 21);
     
 }
 
 // Referencias del html
 const btnPedirCarta  = document.querySelector( '#btn-pedir-carta' );
 const btnDetener = document.querySelector( '#btn-detener' );
-const scoreTags = document.querySelectorAll('small');
+const btnNuevoJuego = document.querySelector( '#btn-nuevo-juego' );
+
+const scoreCompu = document.querySelector('#small-c');
+const scoreJugador = document.querySelector('#small-j');
 const jugadorCarta = document.querySelector('#jugador-carta');
 const computadorCarta = document.querySelector('#computador-carta');
 
+
+// CAMBIAR PUNTAJE
 const cambiarPuntaje = (valor, posicion) =>{
 
-    scoreTags[posicion].textContent = valor
-    
-
+    posicion.innerText = valor;
 }
+
+// sirve para activar las funciones del boton DETENER
+const contenidoBoton = () => {
+
+    btnPedirCarta.disabled = true;
+    turnoComputadora( puntosJugador );
+    btnDetener.disabled = true;
+
+    setTimeout(() => {
+        defineGanador( puntosJugador, puntosComputador );    
+    }, 300);
+    
+}
+
+
 
 const mostrarCarta = (carta, mostrarCarta) =>{
 
@@ -81,9 +99,32 @@ const mostrarCarta = (carta, mostrarCarta) =>{
     imgCarta.className = 'carta';
     imgCarta.src = `./assets/cartas/${carta}.png`;
 
-
     mostrarCarta.append( imgCarta );
+}
 
+
+
+const defineGanador = ( jugador, computador ) => {
+
+    if( jugador < computador ){
+        if( computador <= 21 ){
+            alert('has perdido');
+        }else{alert('Ganador');}
+
+    }else if( computador < jugador ){
+        if( jugador <= 21){
+            alert('Ganador');
+        }else{alert('Has perdido');}
+    }else if( computador == jugador ){
+        if( jugador <= 21 ){
+            alert('Empate');
+        }
+    }
+    else{
+        alert('WTFFFF');
+    }
+
+     
 
 }
 
@@ -92,9 +133,9 @@ const mostrarCarta = (carta, mostrarCarta) =>{
 btnPedirCarta.addEventListener( 'click', () => {
 
     const carta = pedirCarta();
-    puntosJugador += valorCarta(carta);
+    puntosJugador = puntosJugador + valorCarta(carta);
     mostrarCarta(carta, jugadorCarta);
-    cambiarPuntaje( puntosJugador , 0);
+    cambiarPuntaje( puntosJugador ,scoreJugador );
 
     // Borrar despues
     console.log( barajaMezclada );
@@ -104,18 +145,42 @@ btnPedirCarta.addEventListener( 'click', () => {
 
         btnPedirCarta.disabled = true;
         console.warn('has perdido');
+        contenidoBoton();
+        
     }else if( puntosJugador == 21){
         btnPedirCarta.disabled = true;
         console.info('21!, genial');
+        contenidoBoton();
     }
 
 } );
 
 btnDetener.addEventListener( 'click', () => {
 
-    btnPedirCarta.disabled = true;
-    turnoComputadora( puntosJugador );
-    btnDetener.disabled = true;
+    contenidoBoton();
+    
 
 });
+
+btnNuevoJuego.addEventListener( 'click', () => {
+
+// Crear la baraja
+    barajaMezclada = [];
+    barajaMezclada = crearBaraja();
+// borrar cartas
+    jugadorCarta.innerHTML = '';
+    computadorCarta.innerHTML = '';
+// reiniciar marcadores
+    puntosComputador = 0;
+    puntosJugador = 0;
+    cambiarPuntaje( 0, scoreJugador );
+    cambiarPuntaje( 0, scoreCompu );
+    scoreCompu.innerHTML = '';
+    scoreJugador.innerHTML = '';
+// Habilitar botones
+    btnDetener.disabled = false;
+    btnPedirCarta.disabled = false;
+    
+});
+
 
