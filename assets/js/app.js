@@ -62,6 +62,7 @@ const turnoComputadora = ( puntosMinimos ) => {
 
 // Referencias del html
 const btnPedirCarta  = document.querySelector( '#btn-pedir-carta' );
+const btnDetener = document.querySelector( '#btn-detener' );
 const scoreTags = document.querySelectorAll('small');
 const jugadorCarta = document.querySelector('#jugador-carta');
 const computadorCarta = document.querySelector('#computador-carta');
@@ -110,8 +111,11 @@ btnPedirCarta.addEventListener( 'click', () => {
 
 } );
 
-// btnNuevoJuego.addEventListener( 'click', () => {
+btnDetener.addEventListener( 'click', () => {
 
-    
-// });
+    btnPedirCarta.disabled = true;
+    turnoComputadora( puntosJugador );
+    btnDetener.disabled = true;
+
+});
 
